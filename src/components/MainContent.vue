@@ -12,72 +12,20 @@
     </section>
 
     <!-- 文本输入区域 -->
-    <section class="mb-12 bg-white rounded-xl shadow-md p-6 md:p-8 max-w-4xl mx-auto transform transition-all duration-500 hover:shadow-lg">
-      <h3 class="text-xl font-semibold mb-6 flex items-center">
-        <i class="fa fa-pencil-square-o text-primary mr-2"></i>输入文本内容
-      </h3>
-
-      <div class="space-y-6">
-        <!-- 混合输入区域 -->
-        <div>
-          <label for="mixed-text" class="block text-sm font-medium text-neutral-700 mb-2">
-            输入日语文本
-          </label>
-          <textarea
-            id="mixed-text"
-            v-model="mixedText"
-            rows="10"
-            class="w-full px-4 py-3 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none text-lg"
-            placeholder="请输入日语文本，例如：
-電話で女の学生と男の学生が話しています。男の学生は明日何をしなければなりませんか。
-女：もしもし、伊藤君、私田中だけど。明日のサークルのミーティングが急用で出られなくなっちゃったから代わりに仕切ってくれない？
-男：はい、わかりました。何か特別に準備することはありますか？"
-          ></textarea>
-          <p class="mt-1 text-sm text-neutral-500">
-            <i class="fa fa-info-circle mr-1"></i> 系统会按句号自动断句，并识别性别标识（如"女："、"男："）
-          </p>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-end pt-4">
-          <button
-            @click="clearText"
-            class="px-6 py-2 border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-100 transition-all flex items-center justify-center"
-          >
-            <i class="fa fa-eraser mr-2"></i>清空
-          </button>
-          <button
-            @click="processText"
-            class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg shadow-sm hover:shadow transition-all flex items-center justify-center font-medium"
-          >
-            <i class="fa fa-magic mr-2"></i>处理文本
-          </button>
-        </div>
-      </div>
-    </section>
+    <SentenceInputArea
+      :mixed-text="mixedText"
+      @update:mixedText="mixedText = $event"
+      @clear-text="clearText"
+      @process-text="processText"
+    />
 
     <!-- 结果显示区域 -->
-    <section :class="{ 'hidden': !showResults }" id="results-section" class="max-w-4xl mx-auto">
-      <div id="practice-content" class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-semibold flex items-center">
-          <i class="fa fa-list-alt text-primary mr-2"></i>练习内容
-        </h3>
-        <div class="text-sm text-neutral-600">
-          <span id="sentence-count">{{ sentenceData.length }}</span> 组句子
-        </div>
-      </div>
-
-      <!-- 句子列表 -->
-      <div id="sentences-container" class="space-y-8">
-        <SentenceCard
-          v-for="(sentence, index) in sentenceData"
-          :key="index"
-          :index="index"
-          :sentence="sentence"
-          :chinese-sentence="chineseSentences[index]"
-          :on-edit="openEditModal"
-        />
-      </div>
-    </section>
+    <ResultsDisplay
+      :show-results="showResults"
+      :sentence-data="sentenceData"
+      :chinese-sentences="chineseSentences"
+      :on-edit="openEditModal"
+    />
 
     <!-- 空状态提示 -->
     <section 
@@ -105,12 +53,18 @@
 <script>
 import { defineComponent, ref, onMounted } from 'vue'
 import SentenceCard from './SentenceCard.vue'
+import SentenceInputArea from './sentence/SentenceInputArea.vue'
+import ResultsDisplay from './sentence/ResultsDisplay.vue'
+import EmptyState from './sentence/EmptyState.vue'
 import { useTextProcessing } from '../composables/useTextProcessing'
 
 export default defineComponent({
   name: 'MainContent',
   components: {
-    SentenceCard
+    SentenceCard,
+    SentenceInputArea,
+    ResultsDisplay,
+    EmptyState
   },
   emits: ['update-sentence'],
   setup(props, { emit }) {

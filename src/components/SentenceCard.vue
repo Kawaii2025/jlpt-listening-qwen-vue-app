@@ -85,22 +85,13 @@
     </div>
 
     <!-- 检查结果区域 -->
-    <div v-if="showResult" class="check-result mb-4">
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-sm font-medium result-status" v-html="resultStatus"></span>
-        <span class="text-xs text-neutral-500 accuracy">准确率: {{ accuracy.toFixed(1) }}%</span>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <span class="text-xs font-medium text-neutral-500">你的输入：</span>
-          <div class="user-input-display font-japanese text-sm p-2 bg-neutral-50 rounded" v-html="userInputHtml"></div>
-        </div>
-        <div>
-          <span class="text-xs font-medium text-neutral-500">正确答案：</span>
-          <div class="correct-answer-display font-japanese text-sm p-2 bg-neutral-50 rounded" v-html="correctAnswerHtml"></div>
-        </div>
-      </div>
-    </div>
+    <ResultDisplay
+      :show-result="showResult"
+      :result-status="resultStatus"
+      :accuracy="accuracy"
+      :user-input-html="userInputHtml"
+      :correct-answer-html="correctAnswerHtml"
+    />
 
     <!-- 日语原文（默认隐藏） -->
     <div v-if="showOriginal" class="japanese-original mb-4">
@@ -119,9 +110,17 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { useTextProcessing } from '../composables/useTextProcessing'
+import ActionButtons from './sentence/ActionButtons.vue'
+import ResultDisplay from './sentence/ResultDisplay.vue'
+import GenderBadge from './sentence/GenderBadge.vue'
 
 export default defineComponent({
   name: 'SentenceCard',
+  components: {
+    ActionButtons,
+    ResultDisplay,
+    GenderBadge
+  },
   props: {
     index: {
       type: Number,
