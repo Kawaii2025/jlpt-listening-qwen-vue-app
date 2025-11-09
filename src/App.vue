@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-50 font-sans text-neutral-800 min-h-screen flex flex-col">
     <Header />
-    <MainContent @open-edit-modal="openEditModal" />
+    <MainContent @open-edit-modal="openEditModal" @update-sentence="updateSentence" />
     <Footer />
     <EditModal 
       :show="editModal.show" 
@@ -58,13 +58,9 @@ export default defineComponent({
     }
 
     const saveEdit = (data) => {
-      // In a real app, you would update the main content's sentence data
-      // For now, we'll just log the update
-      console.log('Saving edit:', data)
-      closeEditModal()
-      
-      // Show notification
-      showNotification(`句子 ${data.index + 1} 已更新`, 'success')
+      // Emit an event to update the sentence data in MainContent
+      editModal.value.show = false
+      emit('updateSentence', data)
     }
 
     // 显示通知函数
@@ -123,6 +119,18 @@ export default defineComponent({
     }
 
     return {
+      editModal,
+      openEditModal,
+      closeEditModal,
+      saveEdit
+    }
+
+    const updateSentence = (data) => {
+      // This method will be passed to MainContent
+    }
+
+    return {
+      appState,
       editModal,
       openEditModal,
       closeEditModal,

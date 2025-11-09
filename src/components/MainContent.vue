@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, onMounted } from 'vue'
 import SentenceCard from './SentenceCard.vue'
 import { useTextProcessing } from '../composables/useTextProcessing'
 
@@ -112,6 +112,7 @@ export default defineComponent({
   components: {
     SentenceCard
   },
+  emits: ['update-sentence'],
   setup(props, { emit }) {
     const mixedText = ref(`大学の演劇サ一クルで女の学生と部長の男の学生が話しています。女の学生はこの後何
 をしなければなりませんか。
@@ -252,6 +253,26 @@ export default defineComponent({
       emit('openEditModal', editData);
     }
 
+    const updateSentence = (data) => {
+      const { index, gender, japanese, chinese } = data;
+      if (index >= 0 && index < sentenceData.value.length) {
+        // Update the sentence data
+        sentenceData.value[index].text = japanese;
+        sentenceData.value[index].gender = gender;
+        chineseSentences.value[index] = chinese;
+        
+        // Show notification
+        showNotification(`句子 ${index + 1} 已更新`, 'success');
+      }
+    };
+
+    onMounted(() => {
+      // 页面加载完成后自动处理文本 (Auto-process text on page load)
+      setTimeout(() => {
+        processText();
+      }, 500);
+    });
+
     return {
       mixedText,
       sentenceData,
@@ -261,7 +282,8 @@ export default defineComponent({
       clearText,
       showNotification,
       focusOnTextarea,
-      openEditModal
+      openEditModal,
+      updateSentence
     }
   }
 })
