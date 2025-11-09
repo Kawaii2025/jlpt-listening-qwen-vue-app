@@ -1,29 +1,29 @@
 <template>
-  <span 
-    v-if="gender === 'male'" 
-    class="bg-male/10 text-male text-xs font-medium px-2 py-0.5 rounded ml-2"
-  >
-    男性
-  </span>
-  <span 
-    v-else-if="gender === 'female'" 
-    class="bg-female/10 text-female text-xs font-medium px-2 py-0.5 rounded ml-2"
-  >
-    女性
+  <span v-if="genderClass" :class="genderClass">
+    {{ genderLabel }}
   </span>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import { computed } from 'vue'
 
-export default defineComponent({
-  name: 'GenderBadge',
-  props: {
-    gender: {
-      type: String,
-      default: null,
-      validator: (value) => ['male', 'female', null].includes(value)
-    }
+const props = defineProps({
+  gender: {
+    type: String,
+    default: null,
+    validator: (value) => ['male', 'female', null].includes(value)
   }
+})
+
+const genderClass = computed(() => {
+  const baseClass = 'text-xs font-medium px-2 py-0.5 rounded ml-2'
+  return {
+    'bg-male/10 text-male': props.gender === 'male',
+    'bg-female/10 text-female': props.gender === 'female'
+  }
+})
+
+const genderLabel = computed(() => {
+  return props.gender === 'male' ? '男性' : '女性'
 })
 </script>
