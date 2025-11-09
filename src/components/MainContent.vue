@@ -139,11 +139,6 @@ export default defineComponent({
       chinese: ''
     })
 
-    // Computed property to determine if results should be shown
-    const shouldShowResults = computed(() => {
-      return sentenceData.value.length > 0
-    })
-
     // 优化：无性别的句子继承前一个句子的性别
     const assignGenders = () => {
       for (let i = 0; i < sentenceData.value.length; i++) {

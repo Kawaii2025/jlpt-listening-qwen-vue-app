@@ -123,7 +123,6 @@ export default defineComponent({
     }
 
     return {
-      appState,
       editModal,
       openEditModal,
       closeEditModal,
