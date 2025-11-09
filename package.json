@@ -15,7 +15,7 @@
     "listening",
     "japanese"
   ],
-  "author": "",
+  "author": "Qwen",
   "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
