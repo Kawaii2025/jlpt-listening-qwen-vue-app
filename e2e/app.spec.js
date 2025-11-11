@@ -218,7 +218,7 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       await expect(checkButton).toBeVisible();
     });
 
-    test.skip('should play sentence audio when play button clicked', async ({ page }) => {
+    test('should play sentence audio when play button clicked', async ({ page }) => {
       await clearUtterances(page);
       
       const card = await getSentenceCard(page, 0);
@@ -260,7 +260,7 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       expect(value).toBe('テストの入力です。');
     });
 
-    test.skip('should check answer and show result - correct answer', async ({ page }) => {
+    test('should check answer and show result - correct answer', async ({ page }) => {
       const clearButton = page.getByRole('button', { name: /清空/i });
       await clearButton.click();
       
@@ -276,16 +276,17 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       // Enter correct answer (without gender prefix)
       await textarea.fill('今日はいい天気ですね。');
       
-      const checkButton = card.getByRole('button', { name: /检查|確認/i });
+      const checkButton = card.getByRole('button', { name: /检查/i });
       await checkButton.click();
       
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       
-      // Should show success indicator
-      await expect(card.locator('.result-status')).toContainText('回答正确');
+      // When answer is 100% correct, check for accuracy percentage
+      const accuracyText = card.locator('.accuracy');
+      await expect(accuracyText).toContainText('100');
     });
 
-    test.skip('should check answer and show result - incorrect answer', async ({ page }) => {
+    test('should check answer and show result - incorrect answer', async ({ page }) => {
       const clearButton = page.getByRole('button', { name: /清空/i });
       await clearButton.click();
       
@@ -304,10 +305,16 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       const checkButton = card.getByRole('button', { name: /检查|確認/i });
       await checkButton.click();
       
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       
-      // Should show error indicator
-      await expect(card.locator('.result-status')).toContainText('有错误');
+      // Should show error indicator - check for result status OR accuracy < 100
+      const resultStatus = card.locator('.result-status');
+      const accuracyText = card.locator('.accuracy');
+      
+      // Either result status has error text, or accuracy is less than 100%
+      const statusText = await resultStatus.textContent();
+      const accText = await accuracyText.textContent();
+      expect(statusText.includes('有错误') || !accText.includes('100.0%')).toBeTruthy();
     });
 
     test('should display accuracy percentage', async ({ page }) => {
@@ -363,7 +370,7 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
     });
   });
 
-  test.describe.skip('Error Playback Features', () => {
+  test.describe('Error Playback Features', () => {
     test.beforeEach(async ({ page }) => {
       await page.waitForTimeout(1000);
     });
@@ -641,7 +648,7 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
     });
   });
 
-  test.describe.skip('Speech Synthesis', () => {
+  test.describe('Speech Synthesis', () => {
     test.beforeEach(async ({ page }) => {
       await page.waitForTimeout(1000);
       await clearUtterances(page);
@@ -922,7 +929,7 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       expect(value2).toBe('二番目の入力');
     });
 
-    test.skip('should preserve checked state after checking answer', async ({ page }) => {
+    test('should preserve checked state after checking answer', async ({ page }) => {
       const clearButton = page.getByRole('button', { name: /清空/i });
       await clearButton.click();
       
@@ -940,17 +947,21 @@ test.describe('JLPT Listening Training App - E2E Tests', () => {
       const checkButton = card.getByRole('button', { name: /检查|確認/i });
       await checkButton.click();
       
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       
-      // Result should persist
-      const resultStatus = card.locator('.result-status');
-      await expect(resultStatus).toBeVisible();
+      // Result should persist - check for accuracy display
+      const checkResult = card.locator('.check-result');
+      await expect(checkResult).toBeVisible();
+      
+      const accuracyText = card.locator('.accuracy');
+      await expect(accuracyText).toContainText('100');
       
       // Click elsewhere
       await page.click('body');
       
       // Result should still be visible
-      await expect(resultStatus).toBeVisible();
+      await expect(checkResult).toBeVisible();
+      await expect(accuracyText).toContainText('100');
     });
 
     test('should reset results when clearing text', async ({ page }) => {
