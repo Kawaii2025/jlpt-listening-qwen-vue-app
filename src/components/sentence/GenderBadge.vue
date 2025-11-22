@@ -17,10 +17,11 @@ const props = defineProps({
 
 const genderClass = computed(() => {
   const baseClass = 'text-xs font-medium px-2 py-0.5 rounded ml-2'
-  return {
+  const colorClasses = {
     'bg-male/10 text-male': props.gender === 'male',
     'bg-female/10 text-female': props.gender === 'female'
   }
+  return [baseClass, colorClasses]
 })
 
 const genderLabel = computed(() => {
